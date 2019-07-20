@@ -1,0 +1,3 @@
+#compdef Ticket
+
+_arguments "1:::($(cat <<< $(git branch) | awk '{gsub("\*","",$0); gsub(" ","");print $0;}'))"
