@@ -7,6 +7,51 @@ Raise()
     Raise__main $@;
 }
 
+Raise__setup_symfony()
+{
+    cd $2 && composer create-project symfony/skeleton . -s dev;
+}
+
+Raise__setup_react()
+{
+    cd $1;
+    npm install @material-ui/core @material-ui/icons react-dom react-router;
+    npm install --save-dev babel-core babel-loader babel-preset-react;
+    npm install --save-dev webpack webpack-dev-server html-webpack-plugin;
+    create-react-app pub;
+    cd pub && npm start;
+}
+
+Raise__setup_docker()
+{
+    ## Docker
+    #cp $raise__path/files/docker/* /Workspace/Code/$1;
+
+}
+
+Raise_setup_nginx()
+{
+    ## Source template: https://www.nginx.com/resources/wiki/start/topics/recipes/symfony/
+    #SERVERNAME PATH
+    servername="$1.sf4.local";
+    if [ ".local" != $servername ];
+    then
+        if [ -d $2 ];
+        then
+            awkcommand='{
+    gsub(/SERVERNAME/, servername);
+    gsub(/PATH/, path);
+    print;
+}
+'
+            awk -v servername="$servername" \
+                -v path="$2/www/public" \
+                $awkcommand $raise__path/files/nginx/default.sf4.conf \
+                >> /Workspace/Code/nginx.conf.d/$1.sf4.conf
+        fi;
+    fi;
+}
+
 Raise__create()
 {
     cd /Workspace/Code;
@@ -14,20 +59,17 @@ Raise__create()
     then
         mkdir -p /Workspace/Code/$1/{www,sql};
         cd /Workspace/Code/$1 && echo "Created.";
+        apppath=/Workspace/Code/$1;
+        ## Nginx
+        Raise_setup_nginx $1 $apppath;
         ## Docker
-        cp $raise__path/files/docker/* /Workspace/Code/$1;
+        #Raise__setup_docker $apppath;
         ## Symfony
-        cd www && composer create-project symfony/skeleton $1 -s dev;
+        #return;
+        Raise__setup_symfony "$1" "$apppath/www"
+        return;
         ## React
-        # TODO: Remove the install -g to Workspace Creation.
-        cd ../ #&& sudo npm install -g create-react-app;
-        npm install @material-ui/icons;
-        create-react-app pub
-            && cd pub
-            && npm install @material-ui/core
-            && npm start
-        
-        # docker build --tag=$1
+        #Raise__setup_react $apppath
     fi;
 }
 
