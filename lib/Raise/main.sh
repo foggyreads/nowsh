@@ -15,11 +15,12 @@ Raise__setup_symfony()
 Raise__setup_react()
 {
     cd $1;
-    npm install @material-ui/core @material-ui/icons react-dom react-router;
-    npm install --save-dev babel-core babel-loader babel-preset-react;
-    npm install --save-dev webpack webpack-dev-server html-webpack-plugin;
-    create-react-app pub;
-    cd pub && npm start;
+    create-react-app frontapp && cd frontapp;
+    npm install @material-ui/core @material-ui/icons react-dom react-router
+        \ babel-core babel-loader babel-preset-react
+        # \ webpack webpack-dev-server
+        \ html-webpack-plugin;
+    npm start;
 }
 
 Raise__setup_docker()
@@ -48,6 +49,11 @@ Raise_setup_nginx()
                 -v path="$2/www/public" \
                 $awkcommand $raise__path/files/nginx/default.sf4.conf \
                 >> /Workspace/Code/nginx.conf.d/$1.sf4.conf
+            
+            sudo service nginx restart;
+            
+            echo "Please add the following line to /etc/hosts: \n127.0.0.1 $servername";
+            
         fi;
     fi;
 }
@@ -65,11 +71,9 @@ Raise__create()
         ## Docker
         #Raise__setup_docker $apppath;
         ## Symfony
-        #return;
         Raise__setup_symfony "$1" "$apppath/www"
-        return;
         ## React
-        #Raise__setup_react $apppath
+        Raise__setup_react $apppath
     fi;
 }
 
