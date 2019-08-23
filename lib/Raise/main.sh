@@ -9,17 +9,23 @@ Raise()
 
 Raise__setup_symfony()
 {
-    cd $2 && composer create-project symfony/skeleton . -s dev;
+    cd $2;
+    composer create-project --no-cache symfony/skeleton ./ '4.*';
+    composer require symfony/orm-pack;
+    composer require ramsey/uuid;
+    composer require --dev symfony/maker-bundle;
+
 }
 
 Raise__setup_react()
 {
     cd $1;
     create-react-app frontapp && cd frontapp;
-    npm install @material-ui/core @material-ui/icons react-dom react-router
+    npm install @material-ui/core @material-ui/icons react-dom react-router react-router-dom
         \ babel-core babel-loader babel-preset-react
         # \ webpack webpack-dev-server
-        \ html-webpack-plugin;
+        \ html-webpack-plugin
+	\ @material-ui/lab;
     npm start;
 }
 
